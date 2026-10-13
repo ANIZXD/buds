@@ -86,11 +86,8 @@ object FastPath {
         return Regex("^(?:$body)(?: please| pls| please do)?$", I)
     }
 
-    /** Wake words, including the deliberate mishearing list ("bud" / "buts"). */
-    private val WAKE = listOf(
-        "hey buds", "hey bud", "ok buds", "okay buds", "hi buds",
-        "hey buts", "buds", "bud", "buts"
-    )
+    /** Wake words — shared with Wake so the spoken forms never drift apart. */
+    private val WAKE = Wake.phrases
 
     fun stripWake(raw: String): String {
         var t = raw.trim()

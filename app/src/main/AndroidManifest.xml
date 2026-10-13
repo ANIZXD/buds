@@ -74,9 +74,9 @@
             </intent-filter>
         </service>
 
-        <!-- Media button fallback for older handsets; modern ones route through the live MediaSession. -->
+        <!-- Claims the earbud's media button so a tap starts Buds instead of the assistant. -->
         <receiver
-            android:name="androidx.media.session.MediaButtonReceiver"
+            android:name=".BudsMediaButtonReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />

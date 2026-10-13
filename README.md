@@ -12,7 +12,12 @@ because a Chrome tab loses the microphone the moment you switch tabs.
 
 - **Earbud tap starts listening.** Your earbud's media key is caught by an active
   `MediaSession` inside a foreground service, so it works with the screen off and
-  the phone in your pocket.
+  the phone in your pocket. Buds also registers itself for the media button, so a
+  tap lands here instead of being swallowed by the assistant (Gemini).
+- **Say "hey buds" from across the room.** When hands-free is on and nothing else
+  is happening, a quiet on-device listener waits for the wake word — "hey buds",
+  "buds", even the mishears "hey buts"/"bud" — and then takes the command, so
+  "hey buds, what time is it" works in a single breath.
 - **It talks back** through the earbuds, and shuts up when you talk over it.
 - **A 20-second follow-up window** after each command, so you can chain
   "next" / "louder" / "pause" without tapping again.
@@ -53,10 +58,13 @@ The toolchain is not on PATH; the scripts point at `C:\Users\ay660\dev`
 
 ## Known limits of v0.1
 
-- **No wake word yet.** The trigger is the earbud tap, the tile, or the
-  notification — saying "hey buds" only works because nothing filters it out, it
-  does not start a listen by itself. A wake-word engine is the next obvious
-  addition.
+- **The wake word is software, so it costs a little battery.** While nothing else
+  is happening, Buds keeps the recogniser cycling so it can hear the wake phrase —
+  that is the price of a wake word without a dedicated low-power DSP. It stops
+  when hands-free is off, and can be turned off in the app (Behaviour → Wake word).
+- Some earbuds bind a double-tap or long-press to the assistant *in the earbuds'
+  own firmware*; those gestures never reach any app. A single tap / play-pause is
+  the one Buds can claim — and it does.
 - If a music player is playing, Android may send the earbud key to the music app
   instead of Buds. That's the phone's routing, not a bug here — use the tile.
 - Media transport control is best-effort: Buds briefly deactivates its own media

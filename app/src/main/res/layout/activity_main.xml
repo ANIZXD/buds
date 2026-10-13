@@ -353,6 +353,15 @@
                     android:text="@string/switch_chime"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="14sp" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/swWake"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/switch_wake"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

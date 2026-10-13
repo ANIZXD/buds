@@ -36,6 +36,9 @@
     <string name="switch_speak">Speak replies out loud</string>
     <string name="switch_fast">Instant local commands (no network)</string>
     <string name="switch_chime">Chime when listening starts</string>
+    <string name="switch_wake">Wake word — say \u201Chey buds\u201D to start</string>
+
+    <string name="state_wake">Listening for \u201Chey buds\u201D…</string>
 
     <string name="perm_mic">Microphone</string>
     <string name="perm_notif">Notifications</string>

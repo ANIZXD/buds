@@ -31,6 +31,11 @@ class Prefs(context: Context) {
         get() = sp.getBoolean("chime", true)
         set(v) { sp.edit().putBoolean("chime", v).apply() }
 
+    /** Say "hey buds" to start a session without touching the earbuds. */
+    var wakeWord: Boolean
+        get() = sp.getBoolean("wake", true)
+        set(v) { sp.edit().putBoolean("wake", v).apply() }
+
     /** Recent conversation, as a JSON array, so follow-ups still make sense. */
     var history: String
         get() = sp.getString("history", "") ?: ""

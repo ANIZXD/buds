@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -65,6 +66,11 @@ class VoiceService : Service() {
         var running = false
             private set
 
+        /** The live media session, so the media-button receiver can hand taps to it. */
+        @Volatile
+        var sessionForButtons: MediaSessionCompat? = null
+            private set
+
         private val STOP_WORDS = setOf(
             "stop", "cancel", "never mind", "nevermind", "that's all", "thats all",
             "stop listening", "shut up", "goodbye", "bye", "bye bye", "quit", "exit"
@@ -90,6 +96,7 @@ class VoiceService : Service() {
 
     private var listening = false
     private var wantListening = false
+    private var wakeArmed = false
     private var speaking = false
     private var followUpUntil = 0L
     private var suppressMediaUntil = 0L
@@ -146,6 +153,7 @@ class VoiceService : Service() {
         tts = null
         try { session?.release() } catch (_: Throwable) {}
         session = null
+        sessionForButtons = null
         try { tone?.release() } catch (_: Throwable) {}
         tone = null
         super.onDestroy()
@@ -154,6 +162,7 @@ class VoiceService : Service() {
     private val watchdog = object : Runnable {
         override fun run() {
             if (wantListening && !listening && !speaking && System.currentTimeMillis() > followUpUntil) goIdle()
+            if (!wantListening && !listening && !speaking && !wakeArmed && prefs.wakeWord) armWake()
             handler.postDelayed(this, 1000)
         }
     }
@@ -187,6 +196,19 @@ class VoiceService : Service() {
             }
         }, handler)
         s.isActive = true
+        // This line is what makes an earbud tap reach Buds instead of being
+        // swallowed by the assistant (Gemini): the system now knows Buds claims
+        // the media button and routes taps to our receiver / live session.
+        s.setMediaButtonReceiver(
+            PendingIntent.getBroadcast(
+                this, 0,
+                Intent(Intent.ACTION_MEDIA_BUTTON).setComponent(
+                    ComponentName(this, BudsMediaButtonReceiver::class.java)
+                ),
+                piFlags()
+            )
+        )
+        sessionForButtons = s
         session = s
     }
 
@@ -237,6 +259,7 @@ class VoiceService : Service() {
         }
         if (extendWindow) followUpUntil = System.currentTimeMillis() + FOLLOW_UP_MS
         wantListening = true
+        stopWake() // leave the quiet wake-loop before taking the mic for real
         if (speaking) stopSpeaking()
         if (listening) return
 
@@ -265,6 +288,63 @@ class VoiceService : Service() {
         wantListening = false
         stopListening()
         setState(getString(R.string.notif_idle))
+        armWake()
+    }
+
+    // ------------------------------------------------------------ wake word
+
+    /**
+     * Idle-but-alive: the mic runs a quiet recognizer loop that listens for the
+     * wake phrase. On a hit the same pipeline takes over, so "hey buds, what
+     * time is it" works in a single breath.
+     */
+    private fun armWake() {
+        if (!prefs.wakeWord || wantListening || speaking || listening) return
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !=
+            PackageManager.PERMISSION_GRANTED
+        ) return
+        ensureRecognizer()
+        val r = recognizer ?: return
+        wakeArmed = true
+        listening = true
+        try {
+            r.startListening(sttIntent())
+            setState(getString(R.string.state_wake))
+        } catch (_: Throwable) {
+            wakeArmed = false
+            listening = false
+            armWakeSoon(600)
+        }
+    }
+
+    private fun armWakeSoon(delay: Long) {
+        handler.postDelayed({
+            if (wakeArmed || speaking) return@postDelayed
+            if (prefs.wakeWord && !wantListening && !listening) armWake()
+        }, delay)
+    }
+
+    /** Drop out of wake-listening (before speaking or entering command mode). */
+    private fun stopWake() {
+        if (!wakeArmed) return
+        wakeArmed = false
+        listening = false
+        try { recognizer?.cancel() } catch (_: Throwable) {}
+    }
+
+    /** A wake session ended: act on the wake command, or quietly keep listening. */
+    private fun onWakeResult(said: String?) {
+        if (said.isNullOrBlank()) {
+            armWake()
+            return
+        }
+        if (Wake.spotted(said)) {
+            followUpUntil = System.currentTimeMillis() + FOLLOW_UP_MS
+            wantListening = true
+            handleUtterance(said)
+        } else {
+            armWake()
+        }
     }
 
     private fun restartSoon(delay: Long) {
@@ -280,11 +360,23 @@ class VoiceService : Service() {
         override fun onBufferReceived(buffer: ByteArray?) {}
         override fun onEndOfSpeech() {
             listening = false
-            setState("Thinking…")
+            if (wakeArmed) setState(getString(R.string.state_wake)) else setState("Thinking…")
         }
 
         override fun onError(error: Int) {
             listening = false
+            if (wakeArmed) {
+                wakeArmed = false
+                when (error) {
+                    SpeechRecognizer.ERROR_NO_MATCH,
+                    SpeechRecognizer.ERROR_SPEECH_TIMEOUT,
+                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY,
+                    SpeechRecognizer.ERROR_CLIENT,
+                    SpeechRecognizer.ERROR_AUDIO -> armWakeSoon(200)
+                    else -> armWakeSoon(1500)
+                }
+                return
+            }
             when (error) {
                 SpeechRecognizer.ERROR_NO_MATCH, SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> {
                     if (wantListening && System.currentTimeMillis() < followUpUntil) restartSoon(250)
@@ -317,6 +409,11 @@ class VoiceService : Service() {
             listening = false
             val said = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 ?.firstOrNull()?.trim()
+            if (wakeArmed) {
+                wakeArmed = false
+                onWakeResult(said)
+                return
+            }
             if (said.isNullOrEmpty()) {
                 if (wantListening && System.currentTimeMillis() < followUpUntil) restartSoon(250) else goIdle()
                 return
@@ -325,6 +422,7 @@ class VoiceService : Service() {
         }
 
         override fun onPartialResults(partialResults: Bundle?) {
+            if (wakeArmed) return
             val p = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.lastOrNull()
             if (!p.isNullOrBlank()) setState("… $p")
         }
@@ -338,6 +436,10 @@ class VoiceService : Service() {
         BudsLog.add("You: $raw")
         val text = FastPath.stripWake(raw).trim()
         if (text.isBlank()) {
+            // A bare wake word ("hey buds") — open a follow-up window so the
+            // next phrase is heard without repeating the wake word.
+            followUpUntil = System.currentTimeMillis() + FOLLOW_UP_MS
+            wantListening = true
             speak("Yeah?")
             return
         }
@@ -481,6 +583,7 @@ class VoiceService : Service() {
             return
         }
         BudsLog.add("Buds: $text")
+        stopWake()
         if (!prefs.speakReplies || !ttsReady) {
             onSpeechDone()
             return
@@ -637,6 +740,7 @@ class VoiceService : Service() {
 
     private fun shutdown() {
         wantListening = false
+        wakeArmed = false
         stopListening()
         stopSpeaking()
         lastState = ""

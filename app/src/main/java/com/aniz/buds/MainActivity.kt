@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         b.swSpeak.isChecked = prefs.speakReplies
         b.swFast.isChecked = prefs.fastPath
         b.swChime.isChecked = prefs.chime
+        b.swWake.isChecked = prefs.wakeWord
 
         b.btnSave.setOnClickListener {
             save()
@@ -88,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         prefs.speakReplies = b.swSpeak.isChecked
         prefs.fastPath = b.swFast.isChecked
         prefs.chime = b.swChime.isChecked
+        prefs.wakeWord = b.swWake.isChecked
     }
 
     private fun refresh() {
