@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Nova</string>
+    <string name="tile_label">Nova</string>
+
+    <string name="title">Nova</string>
+    <string name="subtitle">Hands-free voice assistant</string>
+
+    <string name="state_off">Hands-free is OFF</string>
+    <string name="state_on">Hands-free is ON — tap your earbud or say the wake word</string>
+    <string name="btn_start">Turn on hands-free</string>
+    <string name="btn_stop">Turn off</string>
+    <string name="btn_listen_now">Listen now</string>
+
+    <string name="notif_channel_name">Nova assistant</string>
+    <string name="notif_channel_desc">Keeps Nova listening for your earbud control</string>
+    <string name="notif_idle">Nova is ready</string>
+    <string name="notif_action_listen">Listen</string>
+    <string name="notif_action_stop">Stop</string>
+
+    <string name="section_setup">Setup</string>
+    <string name="section_brain">Brain (Groq)</string>
+    <string name="section_behaviour">Behaviour</string>
+    <string name="section_log">Transcript</string>
+
+    <string name="hint_api_key">Groq API key (gsk_…)</string>
+    <string name="hint_model">Model</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_test">Test brain</string>
+    <string name="switch_speak">Speak replies out loud</string>
+    <string name="switch_fast">Instant local commands (no network)</string>
+    <string name="switch_chime">Chime when listening starts</string>
+
+    <string name="perm_mic">Microphone</string>
+    <string name="perm_notif">Notifications</string>
+    <string name="perm_contacts">Contacts</string>
+    <string name="perm_phone">Phone</string>
+    <string name="perm_camera">Camera (flashlight)</string>
+</resources>
