@@ -1,4 +1,4 @@
-package com.aniz.nova
+package com.aniz.buds
 
 import android.Manifest
 import android.app.Notification
@@ -50,12 +50,12 @@ import java.util.Locale
 class VoiceService : Service() {
 
     companion object {
-        const val ACTION_START = "com.aniz.nova.START"
-        const val ACTION_STOP = "com.aniz.nova.STOP_SERVICE"
-        const val ACTION_TOGGLE = "com.aniz.nova.TOGGLE"
-        const val ACTION_LISTEN = "com.aniz.nova.LISTEN"
+        const val ACTION_START = "com.aniz.buds.START"
+        const val ACTION_STOP = "com.aniz.buds.STOP_SERVICE"
+        const val ACTION_TOGGLE = "com.aniz.buds.TOGGLE"
+        const val ACTION_LISTEN = "com.aniz.buds.LISTEN"
 
-        private const val CHANNEL = "nova_main"
+        private const val CHANNEL = "buds_main"
         private const val NOTIF_ID = 41
 
         /** How long after a command you can keep talking without tapping again. */
@@ -162,7 +162,7 @@ class VoiceService : Service() {
 
     @Suppress("DEPRECATION")
     private fun initSession() {
-        val s = MediaSessionCompat(this, "Nova")
+        val s = MediaSessionCompat(this, "Buds")
         s.setFlags(
             MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
@@ -335,7 +335,7 @@ class VoiceService : Service() {
     // ------------------------------------------------------------- deciding
 
     private fun handleUtterance(raw: String) {
-        NovaLog.add("You: $raw")
+        BudsLog.add("You: $raw")
         val text = FastPath.stripWake(raw).trim()
         if (text.isBlank()) {
             speak("Yeah?")
@@ -363,7 +363,7 @@ class VoiceService : Service() {
     private fun askBrain(text: String) {
         val key = prefs.apiKey.trim()
         if (key.isEmpty()) {
-            speak("I need a Groq API key. Open the Nova app and paste one in.")
+            speak("I need a Groq API key. Open the Buds app and paste one in.")
             return
         }
         setState("Thinking…")
@@ -480,7 +480,7 @@ class VoiceService : Service() {
             onSpeechDone()
             return
         }
-        NovaLog.add("Nova: $text")
+        BudsLog.add("Buds: $text")
         if (!prefs.speakReplies || !ttsReady) {
             onSpeechDone()
             return
@@ -560,8 +560,8 @@ class VoiceService : Service() {
             this, 3, Intent(this, MainActivity::class.java), piFlags()
         )
         return NotificationCompat.Builder(this, CHANNEL)
-            .setSmallIcon(R.drawable.ic_stat_nova)
-            .setContentTitle("Nova")
+            .setSmallIcon(R.drawable.ic_stat_buds)
+            .setContentTitle("Buds")
             .setContentText(text)
             .setOngoing(true)
             .setOnlyAlertOnce(true)

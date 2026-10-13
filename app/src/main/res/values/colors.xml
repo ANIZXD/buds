@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand -->
+    <color name="brand_primary">#6C4CF1</color>
+    <color name="brand_on_primary">#FFFFFF</color>
+    <color name="brand_container">#E9E2FF</color>
+    <color name="brand_on_container">#1D1145</color>
+    <color name="logo_bg">#6C4CF1</color>
+
+    <!-- Status -->
+    <color name="ok">#12A150</color>
+    <color name="bad">#D93025</color>
+</resources>

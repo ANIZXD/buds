@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NovaHandsfree"
+rootProject.name = "Buds"
 include(":app")

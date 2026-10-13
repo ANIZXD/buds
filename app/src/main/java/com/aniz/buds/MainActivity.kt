@@ -1,17 +1,20 @@
-package com.aniz.nova
+package com.aniz.buds
 
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Html
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.aniz.nova.databinding.ActivityMainBinding
+import com.aniz.buds.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -56,8 +59,15 @@ class MainActivity : AppCompatActivity() {
         b.btnPerms.setOnClickListener { askPerms() }
         b.btnOverlay.setOnClickListener { askOverlay() }
 
-        b.tvLog.text = NovaLog.all().joinToString("\n")
-        NovaLog.listener = { line -> runOnUiThread { b.tvLog.append("\n$line") } }
+        val transcript = BudsLog.all().takeLast(200).joinToString("\n")
+        b.tvLog.text = transcript.ifBlank { getString(R.string.log_empty) }
+        BudsLog.listener = { line ->
+            runOnUiThread {
+                val empty = b.tvLog.text.isEmpty() || b.tvLog.text.toString() == getString(R.string.log_empty)
+                b.tvLog.text = if (empty) line else b.tvLog.text.toString() + "\n" + line
+                b.logScroll.post { b.logScroll.fullScroll(View.FOCUS_DOWN) }
+            }
+        }
     }
 
     override fun onResume() {
@@ -66,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        NovaLog.listener = null
+        BudsLog.listener = null
         scope.cancel()
         super.onDestroy()
     }
@@ -85,6 +95,12 @@ class MainActivity : AppCompatActivity() {
         b.tvState.text = getString(if (on) R.string.state_on else R.string.state_off)
         b.btnToggle.text = getString(if (on) R.string.btn_stop else R.string.btn_start)
 
+        val dot = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(ContextCompat.getColor(this@MainActivity, if (on) R.color.ok else R.color.bad))
+        }
+        b.dotState.background = dot
+
         val mic = granted(Manifest.permission.RECORD_AUDIO)
         val notif = Build.VERSION.SDK_INT < 33 || granted(Manifest.permission.POST_NOTIFICATIONS)
         val contacts = granted(Manifest.permission.READ_CONTACTS)
@@ -92,17 +108,26 @@ class MainActivity : AppCompatActivity() {
         val camera = granted(Manifest.permission.CAMERA)
         val overlay = Settings.canDrawOverlays(this)
 
-        b.tvPerms.text = buildString {
-            appendLine(tick(mic) + "  " + getString(R.string.perm_mic))
-            appendLine(tick(notif) + "  " + getString(R.string.perm_notif))
-            appendLine(tick(contacts) + "  " + getString(R.string.perm_contacts))
-            appendLine(tick(phone) + "  " + getString(R.string.perm_phone))
-            appendLine(tick(camera) + "  " + getString(R.string.perm_camera))
-            append(tick(overlay) + "  Open apps from the background (Display over other apps)")
-        }
+        val rows = listOf(
+            mic to getString(R.string.perm_mic),
+            notif to getString(R.string.perm_notif),
+            contacts to getString(R.string.perm_contacts),
+            phone to getString(R.string.perm_phone),
+            camera to getString(R.string.perm_camera),
+            overlay to "Open apps from the background (Display over other apps)"
+        )
+        b.tvPerms.text = Html.fromHtml(
+            rows.joinToString("<br>") { (ok, label) -> mark(ok) + "&nbsp;&nbsp;" + label },
+            Html.FROM_HTML_MODE_LEGACY
+        )
     }
 
-    private fun tick(ok: Boolean) = if (ok) "✓" else "✗"
+    /** A green tick or a red cross, as inline HTML so it can sit in one TextView. */
+    private fun mark(ok: Boolean): String {
+        val c = ContextCompat.getColor(this, if (ok) R.color.ok else R.color.bad)
+        val hex = String.format("#%06X", 0xFFFFFF and c)
+        return "<font color=\"$hex\"><b>" + (if (ok) "✓" else "✗") + "</b></font>"
+    }
 
     private fun granted(p: String) =
         ContextCompat.checkSelfPermission(this, p) == PackageManager.PERMISSION_GRANTED
@@ -122,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                 Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
             )
         } catch (t: Throwable) {
-            toast("Settings > Apps > Nova > Display over other apps")
+            toast("Settings > Apps > Buds > Display over other apps")
         }
     }
 

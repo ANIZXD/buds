@@ -1,4 +1,4 @@
-package com.aniz.nova
+package com.aniz.buds
 
 import org.json.JSONArray
 import org.json.JSONObject
@@ -19,7 +19,7 @@ object Brain {
     class Device(val time: String, val date: String, val battery: Int, val apps: List<String>)
 
     fun devicePrompt(d: Device): String = buildString {
-        appendLine("You are Nova, a hands-free assistant living on the user's Android phone.")
+        appendLine("You are Buds, a hands-free assistant living on the user's Android phone.")
         appendLine("The user talks to you through their earbuds and you answer out loud, so replies are SPOKEN, not read.")
         appendLine()
         appendLine("Reply with ONE JSON object and nothing else:")
@@ -52,7 +52,7 @@ object Brain {
     }
 
     fun simplePrompt(): String =
-        "You are Nova, a phone assistant. Reply with ONE JSON object and nothing else: " +
+        "You are Buds, a phone assistant. Reply with ONE JSON object and nothing else: " +
             """{"say":"short spoken reply","action":"none","args":{}}"""
 
     /** Blocking - always call this off the main thread. */

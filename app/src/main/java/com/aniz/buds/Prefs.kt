@@ -1,4 +1,4 @@
-package com.aniz.nova
+package com.aniz.buds
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 /** All the app's settings, in one tiny place. */
 class Prefs(context: Context) {
 
-    private val sp: SharedPreferences = context.getSharedPreferences("nova", Context.MODE_PRIVATE)
+    private val sp: SharedPreferences = context.getSharedPreferences("buds", Context.MODE_PRIVATE)
 
     var apiKey: String
         get() = sp.getString("apiKey", "") ?: ""
@@ -16,7 +16,7 @@ class Prefs(context: Context) {
         get() = sp.getString("model", DEFAULT_MODEL) ?: DEFAULT_MODEL
         set(v) { sp.edit().putString("model", v).apply() }
 
-    /** Read Nova's answers out loud. */
+    /** Read Buds' answers out loud. */
     var speakReplies: Boolean
         get() = sp.getBoolean("speak", true)
         set(v) { sp.edit().putBoolean("speak", v).apply() }
@@ -42,7 +42,7 @@ class Prefs(context: Context) {
 }
 
 /** Tiny in-memory transcript so the app can show what was said. */
-object NovaLog {
+object BudsLog {
 
     private val lines = ArrayList<String>()
 

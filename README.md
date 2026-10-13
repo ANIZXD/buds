@@ -1,8 +1,12 @@
-# Nova — hands-free Android voice assistant
+# Buds — hands-free Android voice assistant
 
 Earbuds in, tap once, talk, and it answers out loud. Built to replace the
-browser-extension Hey Nova / NOVA pair, which could never work hands-free because
-a Chrome tab loses the microphone the moment you switch tabs.
+browser-extension approach (Hey Nova / NOVA), which could never work hands-free
+because a Chrome tab loses the microphone the moment you switch tabs.
+
+> Naming: **Buds** is this Android app. It is a separate project from the
+> **hey-nova** browser assistant and from **NOVA**; only the offline command
+> vocabulary was borrowed from NOVA so the words you already use keep working.
 
 ## What it does
 
@@ -21,8 +25,8 @@ a Chrome tab loses the microphone the moment you switch tabs.
 
 ## Alternate ways in (when a music app owns the earbud button)
 
-- Quick Settings tile — pull down the shade, tap **Nova**.
-- The Nova notification's **Listen** button.
+- Quick Settings tile — pull down the shade, tap **Buds**.
+- The Buds notification's **Listen** button.
 
 ## Build
 
@@ -50,8 +54,10 @@ The toolchain is not on PATH; the scripts point at `C:\Users\ay660\dev`
 ## Known limits of v0.1
 
 - **No wake word yet.** The trigger is the earbud tap, the tile, or the
-  notification. A wake-word engine is the next obvious addition.
+  notification — saying "hey buds" only works because nothing filters it out, it
+  does not start a listen by itself. A wake-word engine is the next obvious
+  addition.
 - If a music player is playing, Android may send the earbud key to the music app
-  instead of Nova. That's the phone's routing, not a bug here — use the tile.
-- Media transport control is best-effort: Nova briefly deactivates its own media
+  instead of Buds. That's the phone's routing, not a bug here — use the tile.
+- Media transport control is best-effort: Buds briefly deactivates its own media
   session so the key lands on the music app.

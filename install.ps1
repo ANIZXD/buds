@@ -28,5 +28,5 @@ if ($count -lt 1) {
 }
 
 & $adb install -r $apk
-& $adb shell am start -n com.aniz.nova/.MainActivity
-Write-Host "Done - Nova should be open on the phone." -ForegroundColor Green
+& $adb shell am start -n com.aniz.buds/.MainActivity
+Write-Host "Done - Buds should be open on the phone." -ForegroundColor Green

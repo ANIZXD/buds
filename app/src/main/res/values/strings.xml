@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Nova</string>
-    <string name="tile_label">Nova</string>
+    <string name="app_name">Buds</string>
+    <string name="tile_label">Buds</string>
 
-    <string name="title">Nova</string>
+    <string name="title">Buds</string>
     <string name="subtitle">Hands-free voice assistant</string>
 
-    <string name="state_off">Hands-free is OFF</string>
-    <string name="state_on">Hands-free is ON — tap your earbud or say the wake word</string>
+    <string name="state_off">Hands-free is off</string>
+    <string name="state_on">Hands-free is on</string>
+    <string name="helper_trigger">Tap your earbud once, or use a button below.</string>
     <string name="btn_start">Turn on hands-free</string>
     <string name="btn_stop">Turn off</string>
     <string name="btn_listen_now">Listen now</string>
 
-    <string name="notif_channel_name">Nova assistant</string>
-    <string name="notif_channel_desc">Keeps Nova listening for your earbud control</string>
-    <string name="notif_idle">Nova is ready</string>
+    <string name="notif_channel_name">Buds assistant</string>
+    <string name="notif_channel_desc">Keeps Buds listening for your earbud control</string>
+    <string name="notif_idle">Buds is ready</string>
     <string name="notif_action_listen">Listen</string>
     <string name="notif_action_stop">Stop</string>
 
@@ -22,6 +23,11 @@
     <string name="section_brain">Brain (Groq)</string>
     <string name="section_behaviour">Behaviour</string>
     <string name="section_log">Transcript</string>
+
+    <string name="helper_brain">Only needed for anything the offline commands don\u2019t cover. Free key at console.groq.com.</string>
+    <string name="btn_grant_perms">Grant permissions</string>
+    <string name="btn_overlay">Allow opening apps in the background</string>
+    <string name="log_empty">Nothing yet — say something to Buds.</string>
 
     <string name="hint_api_key">Groq API key (gsk_…)</string>
     <string name="hint_model">Model</string>

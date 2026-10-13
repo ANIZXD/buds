@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.aniz.nova"
+    namespace = "com.aniz.buds"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.aniz.nova"
+        applicationId = "com.aniz.buds"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -51,4 +51,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-service:2.8.7")
     implementation("androidx.media:media:1.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+
+    testImplementation("junit:junit:4.13.2")
 }

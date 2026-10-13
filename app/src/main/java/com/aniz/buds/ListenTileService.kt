@@ -1,9 +1,9 @@
-package com.aniz.nova
+package com.aniz.buds
 
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 
-/** Pull down the shade and tap Nova - the always-available way in, even if a
+/** Pull down the shade and tap Buds - the always-available way in, even if a
  *  music player is holding onto the earbud button. */
 class ListenTileService : TileService() {
 
@@ -23,7 +23,7 @@ class ListenTileService : TileService() {
     private fun render() {
         val t = qsTile ?: return
         t.state = if (VoiceService.running) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        t.label = "Nova"
+        t.label = "Buds"
         t.updateTile()
     }
 }

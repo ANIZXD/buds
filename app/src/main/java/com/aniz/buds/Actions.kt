@@ -1,4 +1,4 @@
-package com.aniz.nova
+package com.aniz.buds
 
 import android.Manifest
 import android.provider.AlarmClock
@@ -121,7 +121,7 @@ object Actions {
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) !=
             PackageManager.PERMISSION_GRANTED
         ) {
-            Toast.makeText(ctx, "Nova needs camera permission for the flashlight", Toast.LENGTH_LONG).show()
+            Toast.makeText(ctx, "Buds needs camera permission for the flashlight", Toast.LENGTH_LONG).show()
             return "I need camera permission for the flashlight."
         }
         val cm = ctx.getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -162,7 +162,7 @@ object Apps {
         for (ri in list) {
             val label = ri.loadLabel(pm).toString().lowercase().trim()
             val pkg = ri.activityInfo.packageName
-            if (label.isNotEmpty() && pkg != "com.aniz.nova") map.putIfAbsent(label, pkg)
+            if (label.isNotEmpty() && pkg != "com.aniz.buds") map.putIfAbsent(label, pkg)
         }
         cache = map
         cachedAt = now
